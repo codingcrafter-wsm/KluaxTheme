@@ -30,7 +30,7 @@ repairPanel(){
 }
 
 while true; do
-    read -p "Are you sure that you want to install the theme [y/n]? " yn
+    read -p "Are you sure that you want to install the orginal theme [y/n]? " yn
     case $yn in
         [Yy]* ) repairPanel; break;;
         [Nn]* ) exit;;
