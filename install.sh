@@ -48,6 +48,29 @@ installTheme(){
     sudo php artisan optimize:clear
 }
 
+move_error_fix(){
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | sudo -E bash -
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    nvm install node || {
+        echo "nvm command not found, trying to source nvm script directly..."
+        . ~/.nvm/nvm.sh
+        nvm install node
+    }
+    apt update
+
+    npm i -g yarn
+    yarn
+    export NODE_OPTIONS=--openssl-legacy-provider
+    yarn build:production || {
+        echo "node: --openssl-legacy-provider is not allowed in NODE_OPTIONS"
+        export NODE_OPTIONS=
+        yarn build:production
+    }
+    sudo php artisan optimize:clear
+}
+
 installThemeQuestion(){
     while true; do
         read -p "Are you sure that you want to install the theme [y/N]? " yn
@@ -79,7 +102,7 @@ echo ""
 echo "[1] Install theme"
 echo "[2] Restore backup"
 echo "[3] Repair panel (use if you have an error in the theme installation)"
-echo "[4] Update the panel"
+echo "[4] Move Error Fix (copy first .css file in right folder)"
 echo "[5] Exit"
 printf "${NO_COLOR}"
 
@@ -98,7 +121,7 @@ if [ $choice == "3" ]
 fi
 if [ $choice == "4" ]
     then
-    repair
+    move_error_fix
 fi
 if [ $choice == "5" ]
     then
